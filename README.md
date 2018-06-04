@@ -13,7 +13,7 @@
 
 ### 1.查询阿里域名的记录IP，当前DNS的记录IP以及查询端的公网IP
 
-```shell
+```ShellSession
 [root@SZV-VM ~]$ ./aliddns.sh home.mydomain.com
 External IP: 218.37.12.42
 Nslookup IP: 116.21.220.238 home.mydomain.com
@@ -22,7 +22,7 @@ AliDNS Record IP: 116.21.220.238 home.mydomain.com
 
 ### 2.查询阿里域名的记录IP，当前DNS的记录IP以及查询端的公网IP，并将记录IP`添加`或`更新`或`删除`到指定的文件（如本地hosts）
 
-```shell
+```ShellSession
 #注：输出文件需已经创建，修改前会自动创建备份文件
 [root@SZV-VM ~]$ ./aliddns.sh home.mydomain.com output.txt
 External IP: 218.37.12.42
@@ -34,7 +34,7 @@ No record can be removed, skip
 
 ### 3.轮询查询阿里域名的记录IP，，并将记录IP`添加`或`更新`或`删除`到指定的文件（如本地hosts）
 
-```shell
+```ShellSession
 #注：输出文件需已经创建，修改前会自动创建备份文件；
 [root@SZV-VM ~]$ ./aliddns.sh home.mydomain.com /etc/hosts 30
 External IP: 218.37.12.42
