@@ -1,24 +1,28 @@
 #!/bin/sh
 
-aliddns_ak="PUT-YOUR-ALIYUM-ACESS-KEY-HERE"
-aliddns_sk="PUT-YOUR-ALIYUN-SECURITY-KEY-HERE"
+#put your aliyun ALIYUN-ACESS-KEY key here.
+aliddns_ak="LTAIEjaPZMM4hUh9"
+#put your aliyun ALIYUN-SECURITY-KEY key here.
+aliddns_sk="YD62jSVBXdyS0wk4yAyHM5xg1NBEbO"
+#the DNS server you want to compare, default is 223.6.6.6
+#you may set empty string if you want to use your default dns server
 aliddns_dns="223.6.6.6"
+#TTL you want to set your DNS parse record, minimal value is 600
 aliddns_ttl="600"
-
+#method to get your external IP
 aliddns_curl="curl -s whatismyip.akamai.com"
 
+#input arguments definitions
 aliddns_domain=$1
 host_file=$2
-check_inteval=$3  #sleep time, 30s 2m 1h 1d
+check_interval=$3  #sleep time, 30s 2m 1h 1d
 
 
-get_external_ip(){
-    echo -n "`$aliddns_curl`"
-}
-
-get_nslookup_ip(){
-    echo -n "`nslookup $aliddns_domain $aliddns_dns | awk '/^Address/ {print $NF}'| tail -n1`"
-}
+if [ -z "$aliddns_ak" ] || [ -z "$aliddns_sk" ]
+then
+    echo ERROR: Your Aliyun Access-Key or Security-Key is not found. Please recheck the variables 1>&2
+    exit 1 # terminate and indicate error
+fi
 
 urlencode() {
     # urlencode <string>
@@ -73,12 +77,18 @@ update_hosts() {
 
 
 exec_check(){
-    nslookup_ip=`get_nslookup_ip`
-    echo "External IP: `get_external_ip`"
-    echo "Nslookup IP: $nslookup_ip $aliddns_domain"
+    nslookup_ip=`nslookup $aliddns_domain $aliddns_dns | awk '/^Address/ {print $NF}'| tail -n1`
+    if [ -z "$1" ]
+    then
+        echo "External IP:  `$aliddns_curl`"
+        echo "Nslookup DNS: ${aliddns_dns:-default}#53"
+        echo ""
+    fi
+    echo "Domain:       $aliddns_domain"
+    echo "Nslookup IP:  $nslookup_ip"
     #echo `query_record`
     record_ip=`query_record | get_record_value`
-    echo "AliDNS Record IP: $record_ip $aliddns_domain"
+    echo "Aliyun   IP:  $record_ip"
 
     if [ -n "$host_file" ] && [ -f $host_file ]
     then
@@ -99,13 +109,9 @@ exec_check(){
     fi
 }
 
-if [ -z $check_inteval ]
-then
-    exec_check
-else
-    while [ 1 ]
-    do
-        exec_check
-        sleep $check_inteval
-    done
-fi
+exec_check
+while [ -n "$check_interval" ]
+do
+    exec_check "NO-EXTERNAL-IP"
+    sleep $check_interval
+done
