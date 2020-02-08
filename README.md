@@ -1,6 +1,6 @@
 # AliDDNS 阿里动态域名脚本
 
-提供阿里域名的动态域名更新、快速查询、以及更新本地DNS结果的轻量脚本。
+提供阿里域名的动态域名更新、快速查询、以及更新本地DNS结果的轻量脚本。本脚本兼容Windows环境（git bash）以及各种Linux发行版本。
 
 阿里云目前提供的免费域名解析，最小TTL是600，也就是10分钟。也就是说，当大家将阿里云的域名解析当做DDNS服务使用的时候，一旦IP地址发生变更，哪怕立即通过API去更新了阿里云的DNS解析记录，但是由于各级DNS缓存的存在，客户端也无法立即解析到最新的IP。该脚本的目的就是为了第一时间解析到DDNS的最新IP而编写，方便一些需要长时间与服务器保持连接的应用，可以在服务器端IP发生变更的时候，最短时间内重新连接上服务器端。
 
@@ -12,6 +12,7 @@
   - [查询阿里云的域名解析](#1查询阿里云的域名解析)
   - [增删改本地hosts的域名解析](#2增删改本地hosts的域名解析)
   - [监控本地hosts的域名解析](#3监控本地hosts的域名解析)
+  - [Windows定时任务更新本地hosts](#4Windows定时任务更新本地hosts)
 - [解析记录的更新逻辑](#解析记录的更新逻辑)
 - [本地hosts的更新逻辑流程图](#本地hosts的更新逻辑流程图)
 - [历史版本](#历史版本)
@@ -68,6 +69,27 @@ hosts.bak is already created, skip bakup operation.
 No record can be removed, skip
 ```
 
+### 4.Windows定时任务更新本地hosts
+
+Windows环境要运行sh脚本文件，需要一些sh的模拟环境，开发人员最常用的就是git-bash了。在Windows环境安装Git的时候就会自带git-bash运行环境，[下载链接](https://git-scm.com/downloads)。安装完毕后打开git-bash后就可以像Linux环境一样使用sh脚本了，使用方式与Linux下完全一样，以下是Windows 10下的截图：
+
+![Windows 10 Git Bash](git-bash.png)
+
+但是在Windows下，如果要修改`C:\Windows\System32\drivers\etc\hosts`文件，需要先将该文件的只读属性去掉，其次必须以管理员或者系统的身份运行。
+
+如果需要在`cmd`下运行sh文件，可以在`cmd`下执行`"C:\Program Files\Git\bin\sh.exe" c:\MyApps\aliddns.sh home.mydomain.com`。
+
+我用该脚本更多是为了更精确的跟踪我的路由器的ip变化，Windows环境我更倾向于使用系统自带的`任务管理`，这里面直接设置一个定时任务（譬如1分钟一次），并使用system的身份去调度，则可以有效修改Windows的hosts文件。以Windows 10为例，方法如下：
+
+1. 鼠标右键单击开始菜单，选择`计算机管理`，依次点开`任务计划程序`->`任务计划程序库`，创建任务；
+2. 在弹出的创建任务窗口，常规选项卡里，将用户账户改为SYSTEM;
+3. 在触发器选项卡里，添加一个新建/修改任务时，时间间隔设置为1分钟或者其它你希望的时间；
+4. 在操作选项卡里，添加应用程序`"C:\Program Files\Git\bin\sh.exe"`，参数为`c:\MyApps\aliddns.sh home.mydomain.com C:\Windows\System32\drivers\etc\hosts`；
+5. 其它选项根据自己的需要设定，或者保持默认即可；
+6. 确定保存后顺利的话就可以看到该任务1分钟会刷新一次了。
+
+![Windows task](windows-task.png)
+
 ---
 
 ## 解析记录的更新逻辑
@@ -84,6 +106,12 @@ No record can be removed, skip
 ---
 
 ## 历史版本
+
+2020-02-08 V1.1
+
+1. 修复hosts文件末尾不带新行，导致hosts最后一条记录丢失的bug；
+
+2. 提供Windows下，基于git bash更新hosts文件的方法；
 
 2018-06-01 初始版本 V1
 

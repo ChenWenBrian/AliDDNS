@@ -71,7 +71,7 @@ update_hosts() {
         sed -i "/$aliddns_domain/c $record_ip $aliddns_domain" $host_file
     else
         echo "Add record: $record_ip $aliddns_domain"
-        echo "$record_ip $aliddns_domain" >> $host_file
+        echo -e "\n$record_ip $aliddns_domain" >> $host_file
     fi
 }
 
