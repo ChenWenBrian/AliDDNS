@@ -79,12 +79,12 @@ Windows环境要运行sh脚本文件，需要一些sh的模拟环境，开发人
 
 如果需要在`cmd`下运行sh文件，可以在`cmd`下执行`"C:\Program Files\Git\bin\sh.exe" c:\MyApps\aliddns.sh home.mydomain.com`。
 
-我用该脚本更多是为了更精确的跟踪我的路由器的ip变化，Windows环境我更倾向于使用系统自带的`任务管理`，这里面直接设置一个定时任务（譬如1分钟一次），并使用system的身份去调度，则可以有效修改Windows的hosts文件。以Windows 10为例，方法如下：
+我用该脚本更多是为了更精确的跟踪我的路由器的ip变化。Windows环境我更倾向于使用系统自带的`任务管理`，可以直接添加一个定时任务（譬如1分钟一次），并使用system的身份去调度，则可以有效修改Windows的hosts文件。以Windows 10为例，方法如下：
 
 1. 鼠标右键单击开始菜单，选择`计算机管理`，依次点开`任务计划程序`->`任务计划程序库`，创建任务；
-2. 在弹出的创建任务窗口，常规选项卡里，将用户账户改为SYSTEM;
-3. 在触发器选项卡里，添加一个新建/修改任务时，时间间隔设置为1分钟或者其它你希望的时间；
-4. 在操作选项卡里，添加应用程序`"C:\Program Files\Git\bin\sh.exe"`，参数为`c:\MyApps\aliddns.sh home.mydomain.com C:\Windows\System32\drivers\etc\hosts`；
+2. 在弹出的`创建任务`窗口，`常规`选项卡里，将用户账户改为`SYSTEM`;
+3. 在`触发器`选项卡里，添加一个新建/修改任务时，时间间隔设置为1分钟或者其它你希望的时间；
+4. 在`操作`选项卡里，添加应用程序`"C:\Program Files\Git\bin\sh.exe"`，参数为`c:\MyApps\aliddns.sh home.mydomain.com C:\Windows\System32\drivers\etc\hosts`；
 5. 其它选项根据自己的需要设定，或者保持默认即可；
 6. 确定保存后顺利的话就可以看到该任务1分钟会刷新一次了。
 
