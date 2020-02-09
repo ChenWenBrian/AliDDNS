@@ -57,8 +57,8 @@ query_record() {
 }
 
 remove_hosts() {
-    if grep -q "$aliddns_domain" "$host_file"; then
-        sed -i "/$aliddns_domain/d" $host_file
+    if grep -q "^[0-9\.]* $aliddns_domain" "$host_file"; then
+        sed -i -E "/^[0-9\.]+ $aliddns_domain/d" $host_file
         echo "Remove record: $aliddns_domain"
     else
         echo "No record can be removed, skip"
@@ -66,12 +66,15 @@ remove_hosts() {
 }
 
 update_hosts() {
-    if grep -q "$aliddns_domain" "$host_file"; then
+    if grep -q "^[0-9\.]* $aliddns_domain" "$host_file"; then
         echo "Update record: $record_ip $aliddns_domain"
-        sed -i "/$aliddns_domain/c $record_ip $aliddns_domain" $host_file
+        sed -i -E "/^[0-9\.]+ $aliddns_domain/c $record_ip $aliddns_domain" $host_file
     else
+        if ! grep -q "# AliDDNS record: $aliddns_domain" "$host_file"; then
+            echo -e "\n# AliDDNS record: $aliddns_domain" >> $host_file
+        fi
         echo "Add record: $record_ip $aliddns_domain"
-        echo -e "\n$record_ip $aliddns_domain" >> $host_file
+        echo "$record_ip $aliddns_domain" >> $host_file
     fi
 }
 
